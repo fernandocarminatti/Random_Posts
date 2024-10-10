@@ -6,6 +6,7 @@ import com.learning.RandomPosts.model.PostFactory;
 import com.learning.RandomPosts.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,5 +22,9 @@ public class PostService {
         Optional<AbstractPost> newPost = Optional.of(PostFactory.createPostByType(newPostDto));
         postRepository.save(newPost.get());
         return newPost;
+    }
+
+    public List<AbstractPost> getAllPosts(){
+        return postRepository.findAll();
     }
 }
