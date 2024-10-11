@@ -3,6 +3,7 @@ package com.learning.RandomPosts.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -18,8 +19,8 @@ public abstract class AbstractPost {
     private String content;
     private String author;
     private String attachments;
-    private LocalDate createdAt;
-    private LocalDate updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public AbstractPost() {
     }
@@ -29,7 +30,7 @@ public abstract class AbstractPost {
         this.content = content;
         this.author = author;
         this.attachments = attachment;
-        this.createdAt = LocalDate.now();
+        this.createdAt = LocalDateTime.now();
     }
 
     public String getId() {
@@ -72,15 +73,15 @@ public abstract class AbstractPost {
         this.attachments = attachments;
     }
 
-    public LocalDate getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public LocalDate getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDate updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

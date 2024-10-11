@@ -2,6 +2,7 @@ package com.learning.RandomPosts.controller;
 
 import com.learning.RandomPosts.dto.NewPostDto;
 import com.learning.RandomPosts.dto.PostResponseDto;
+import com.learning.RandomPosts.dto.PostUpdateDto;
 import com.learning.RandomPosts.model.AbstractPost;
 import com.learning.RandomPosts.service.PostService;
 import jakarta.validation.Valid;
@@ -43,6 +44,16 @@ public class PostsController {
         }
         URI location = URI.create(String.format("/posts/%s", post.get().getTitle().replaceAll(" ", "-").toLowerCase()));
         return ResponseEntity.created(location).build();
+    }
+
+    @PutMapping("/{title}")
+    public ResponseEntity<?> updatePost(@Valid @RequestBody PostUpdateDto postUpdateDto, @PathVariable String title) {
+        String sanitizedTitle = title.replaceAll("-", " ");
+        Optional<AbstractPost> updatedPost = postService.updatePostData(postUpdateDto, sanitizedTitle);
+        if(updatedPost.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updatedPost.get());
     }
 
     @DeleteMapping("/{title}")

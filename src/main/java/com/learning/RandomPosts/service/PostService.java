@@ -1,11 +1,14 @@
 package com.learning.RandomPosts.service;
 
 import com.learning.RandomPosts.dto.NewPostDto;
+import com.learning.RandomPosts.dto.PostUpdateDto;
 import com.learning.RandomPosts.model.AbstractPost;
 import com.learning.RandomPosts.model.PostFactory;
 import com.learning.RandomPosts.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,5 +42,17 @@ public class PostService {
         }
         postRepository.delete(postExistence.get());
         return true;
+    }
+
+    public Optional<AbstractPost> updatePostData(PostUpdateDto postUpdateDto, String originalTitle) {
+        Optional<AbstractPost> foundPost = postRepository.findByTitleIgnoreCase(originalTitle);
+        if(foundPost.isEmpty()){
+            return Optional.empty();
+        }
+        foundPost.get().setTitle(postUpdateDto.title());
+        foundPost.get().setContent(postUpdateDto.content());
+        foundPost.get().setUpdatedAt(LocalDateTime.now());
+        postRepository.save(foundPost.get());
+        return foundPost;
     }
 }
