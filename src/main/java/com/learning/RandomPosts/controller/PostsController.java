@@ -7,10 +7,7 @@ import com.learning.RandomPosts.service.PostService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
@@ -29,6 +26,12 @@ public class PostsController {
     public ResponseEntity<List<PostResponseDto>> getPosts() {
         List<PostResponseDto> posts = postService.getAllPosts().stream().map(PostResponseDto::fromEntity).toList();
         return ResponseEntity.ok(posts);
+    }
+
+    @GetMapping("/{title}")
+    public ResponseEntity<PostResponseDto> getPostByTitle(@PathVariable String title) {
+        Optional<AbstractPost> post = postService.getPostByTitle(title);
+        return post.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(PostResponseDto.fromEntity(post.get()));
     }
 
     @PostMapping("/new-post")

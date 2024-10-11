@@ -7,3 +7,7 @@ services:
       - 'POSTGRES_USER=${DB_USERNAME}'
     ports:
       - '5432:5432'
+    volumes:
+      - ./postsData:/var/lib/postgresql/posts_project
+volumes:
+  postsData:

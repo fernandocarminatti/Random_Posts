@@ -18,13 +18,18 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
+    public List<AbstractPost> getAllPosts(){
+        return postRepository.findAll();
+    }
+
+    public Optional<AbstractPost> getPostByTitle(String title){
+        String sanitizedTitle = title.replaceAll("-", " ");
+        return postRepository.findByTitleIgnoreCase(sanitizedTitle);
+    }
+
     public Optional<AbstractPost> createPost(NewPostDto newPostDto){
         Optional<AbstractPost> newPost = Optional.of(PostFactory.createPostByType(newPostDto));
         postRepository.save(newPost.get());
         return newPost;
-    }
-
-    public List<AbstractPost> getAllPosts(){
-        return postRepository.findAll();
     }
 }
