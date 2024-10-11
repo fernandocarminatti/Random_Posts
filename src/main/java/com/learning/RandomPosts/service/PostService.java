@@ -31,4 +31,13 @@ public class PostService {
         postRepository.save(newPost.get());
         return newPost;
     }
+
+    public boolean deletePost(String title) {
+        Optional<AbstractPost> postExistence = postRepository.findByTitleIgnoreCase(title);
+        if(postExistence.isEmpty()){
+            return false;
+        }
+        postRepository.delete(postExistence.get());
+        return true;
+    }
 }

@@ -44,4 +44,11 @@ public class PostsController {
         URI location = URI.create(String.format("/posts/%s", post.get().getTitle().replaceAll(" ", "-").toLowerCase()));
         return ResponseEntity.created(location).build();
     }
+
+    @DeleteMapping("/{title}")
+    public ResponseEntity<?> deletePost(@PathVariable String title) {
+        String sanitizedTitle = title.replaceAll("-", " ");
+        boolean deletedPost = postService.deletePost(sanitizedTitle);
+        return deletedPost ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+    }
 }
