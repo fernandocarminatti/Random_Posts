@@ -23,8 +23,7 @@ public class PostService {
     }
 
     public Optional<AbstractPost> getPostByTitle(String title){
-        String sanitizedTitle = title.replaceAll("-", " ");
-        return postRepository.findByTitleIgnoreCase(sanitizedTitle);
+        return postRepository.findByTitleIgnoreCase(title);
     }
 
     public Optional<AbstractPost> createPost(NewPostDto newPostDto){

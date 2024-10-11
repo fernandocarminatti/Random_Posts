@@ -17,11 +17,4 @@ public record NewPostDto(
         @NotBlank(message = "Author is required")
         String author,
         List<MultipartFile> attachments) {
-
-        public NewPostDto {
-            if (attachments.size() > 1) {
-                throw new IllegalArgumentException("Only one attachment is allowed");
-            }
-        }
-
 }

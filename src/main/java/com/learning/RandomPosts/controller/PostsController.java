@@ -30,13 +30,18 @@ public class PostsController {
 
     @GetMapping("/{title}")
     public ResponseEntity<PostResponseDto> getPostByTitle(@PathVariable String title) {
-        Optional<AbstractPost> post = postService.getPostByTitle(title);
+        String sanitizedTitle = title.replaceAll("-", " ");
+        Optional<AbstractPost> post = postService.getPostByTitle(sanitizedTitle);
         return post.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(PostResponseDto.fromEntity(post.get()));
     }
 
     @PostMapping("/new-post")
     public ResponseEntity<?> createPost(@Valid @ModelAttribute NewPostDto newPostDto) {
         Optional<AbstractPost> post = postService.createPost(newPostDto);
-        return post.isEmpty() ? ResponseEntity.badRequest().body("Post creation failed") : ResponseEntity.created(URI.create(String.format("/posts/%s", post.get().getId()))).build();
+        if (post.isEmpty()) {
+            return ResponseEntity.internalServerError().body("Something went wrong. Please try again later");
+        }
+        URI location = URI.create(String.format("/posts/%s", post.get().getTitle().replaceAll(" ", "-").toLowerCase()));
+        return ResponseEntity.created(location).build();
     }
 }
