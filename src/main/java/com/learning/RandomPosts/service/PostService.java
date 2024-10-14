@@ -32,9 +32,8 @@ public class PostService {
     }
 
     public Optional<AbstractPost> createPost(NewPostDto newPostDto){
-        String folderId = UUID.randomUUID().toString();
-        storageService.store(newPostDto.attachments(), folderId);
-        Optional<AbstractPost> newPost = Optional.of(PostFactory.createPostByType(newPostDto, folderId));
+        Optional<AbstractPost> newPost = Optional.of(PostFactory.createPostByType(newPostDto));
+        storageService.store(newPostDto.attachments(), newPost.get().getId());
         postRepository.save(newPost.get());
         return newPost;
     }

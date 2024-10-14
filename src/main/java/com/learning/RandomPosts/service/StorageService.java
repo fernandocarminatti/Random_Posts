@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public abstract class StorageService {
@@ -40,16 +41,16 @@ public abstract class StorageService {
 
         for(MultipartFile file : files){
             try {
-                Files.copy(file.getInputStream(), STORAGE_LOCATION.resolve(folderUUID).resolve(file.getOriginalFilename()), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(file.getInputStream(), STORAGE_LOCATION.resolve(folderUUID).resolve(Objects.requireNonNull(file.getOriginalFilename())), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException exception) {
                 throw new StorageException("Could not create directory for file.", exception);
             }
         }
     }
 
-    void deleteFile(String filePrefix, String fileName){
+    void deleteFile(String folderUUID, String fileName){
         try {
-            Files.deleteIfExists(STORAGE_LOCATION.resolve(filePrefix).resolve(fileName));
+            Files.deleteIfExists(STORAGE_LOCATION.resolve(folderUUID).resolve(fileName));
         } catch (IOException exception) {
             throw new StorageException("Could not delete file.", exception);
         }

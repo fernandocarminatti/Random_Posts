@@ -9,7 +9,7 @@ public class AnnouncementPost extends AbstractPost {
     public AnnouncementPost() {
     }
 
-    public AnnouncementPost(String title, String content, String author, String attachment) {
-        super(title, content, author, attachment);
+    public AnnouncementPost(String title, String content, String author) {
+        super(title, content, author);
     }
 }

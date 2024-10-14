@@ -9,7 +9,7 @@ public class SimplePost extends AbstractPost {
     public SimplePost() {
     }
 
-    public SimplePost(String title, String content, String author, String attachment) {
-        super(title, content, author, attachment);
+    public SimplePost(String title, String content, String author) {
+        super(title, content, author);
     }
 }

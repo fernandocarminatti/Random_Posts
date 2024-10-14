@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -12,7 +13,6 @@ import java.time.LocalDateTime;
 public abstract class AbstractPost {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     private String title;
@@ -25,11 +25,12 @@ public abstract class AbstractPost {
     public AbstractPost() {
     }
 
-    public AbstractPost(String title, String content, String author, String attachment) {
+    public AbstractPost(String title, String content, String author) {
+        this.id = UUID.randomUUID().toString();
         this.title = title;
         this.content = content;
         this.author = author;
-        this.attachments = attachment;
+        this.attachments = this.id;
         this.createdAt = LocalDateTime.now();
     }
 
@@ -59,10 +60,6 @@ public abstract class AbstractPost {
 
     public String getAuthor() {
         return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
     }
 
     public String getAttachments() {

@@ -9,7 +9,7 @@ public class InformativePost extends AbstractPost {
     public InformativePost() {
     }
 
-    public InformativePost(String title, String content, String author, String attachment) {
-        super(title, content, author, attachment);
+    public InformativePost(String title, String content, String author) {
+        super(title, content, author);
     }
 }
