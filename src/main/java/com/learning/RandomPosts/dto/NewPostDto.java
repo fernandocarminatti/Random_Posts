@@ -16,5 +16,6 @@ public record NewPostDto(
         String content,
         @NotBlank(message = "Author is required")
         String author,
+        @Size(max = 5, message = "Accepted attachments quantity is between 0 and 5.")
         List<MultipartFile> attachments) {
 }

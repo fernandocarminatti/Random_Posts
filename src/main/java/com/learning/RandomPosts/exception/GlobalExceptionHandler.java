@@ -18,8 +18,9 @@ public class GlobalExceptionHandler {
 
     private static final int SQL_STATE_UNIQUE_CONSTRAINT_VIOLATION = 23505;
     private static final int ATTACHMENT_ARGUMENT_SIZE_EXCEEDED = 21111;
+    private static final int INTERNAL_STORAGE_EXCEPTION = 66666;
+    private static final int BAD_REQUEST_STORAGE_EXCEPTION = 66667;
     private static final int NULL_POINTER_EXCEPTION = 33333;
-    private static final int STORAGE_EXCEPTION = 66666;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorMessage> handleMethodArgumentExceptions(MethodArgumentNotValidException exception) {
@@ -57,7 +58,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(StorageException.class)
     public ResponseEntity<ErrorMessage> handleStorageException(StorageException exception){
-        ErrorMessage errorMessage = new ErrorMessage(LocalDateTime.now(), HttpStatus.INTERNAL_SERVER_ERROR.value(), STORAGE_EXCEPTION, List.of(exception.getMessage()));
+        ErrorMessage errorMessage = new ErrorMessage(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), BAD_REQUEST_STORAGE_EXCEPTION, List.of(exception.getMessage()));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+    }
+
+    @ExceptionHandler(InternalStorageException.class)
+    public ResponseEntity<ErrorMessage> handleInternalStorageException(InternalStorageException exception){
+        ErrorMessage errorMessage = new ErrorMessage(LocalDateTime.now(), HttpStatus.INTERNAL_SERVER_ERROR.value(), INTERNAL_STORAGE_EXCEPTION, List.of(exception.getMessage()));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
     }
 }

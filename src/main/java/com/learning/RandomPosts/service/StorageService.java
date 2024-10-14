@@ -1,5 +1,6 @@
 package com.learning.RandomPosts.service;
 
+import com.learning.RandomPosts.exception.InternalStorageException;
 import com.learning.RandomPosts.exception.StorageException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 public abstract class StorageService {
 
     protected Path STORAGE_LOCATION;
+    protected List<String> VALID_FILE_FORMATS = List.of(".pdf", ".jpg");
 
     void init(){
         if(Files.exists(STORAGE_LOCATION)){
@@ -23,27 +25,29 @@ public abstract class StorageService {
         try {
             Files.createDirectories(STORAGE_LOCATION);
         } catch(IOException exception){
-            throw new StorageException("Could not initialize storage.", exception);
+            throw new InternalStorageException("Could not initialize storage.", exception);
         }
     }
 
     public void store(List<MultipartFile> files, String folderUUID) {
-        if(files.isEmpty() || files.size() > 5){
+        if(files.isEmpty()){
             throw new StorageException("Could not proceed with the request. Please check the attachment quantity.");
+        }
+        if( !validateFileFormat(files) ){
+            throw new StorageException("File format(s) not supported. Accepted values are .pdf and .jpg");
         }
         if(Files.notExists(STORAGE_LOCATION.resolve(folderUUID))){
             try{
                 Files.createDirectory(STORAGE_LOCATION.resolve(folderUUID));
             } catch(IOException exception){
-                throw new StorageException("Could not create directory for file.", exception);
+                throw new InternalStorageException("Could not create directory for file.", exception);
             }
         }
-
         for(MultipartFile file : files){
             try {
                 Files.copy(file.getInputStream(), STORAGE_LOCATION.resolve(folderUUID).resolve(Objects.requireNonNull(file.getOriginalFilename())), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException exception) {
-                throw new StorageException("Could not create directory for file.", exception);
+                throw new InternalStorageException("Could not create directory for file.", exception);
             }
         }
     }
@@ -52,7 +56,7 @@ public abstract class StorageService {
         try {
             Files.deleteIfExists(STORAGE_LOCATION.resolve(folderUUID).resolve(fileName));
         } catch (IOException exception) {
-            throw new StorageException("Could not delete file.", exception);
+            throw new InternalStorageException("Could not delete file.", exception);
         }
     }
 
@@ -64,8 +68,19 @@ public abstract class StorageService {
             }
             Files.deleteIfExists(STORAGE_LOCATION.resolve(path));
         } catch (IOException exception) {
-            throw new StorageException("Could not delete all files.", exception);
+            throw new InternalStorageException("Could not delete all files.", exception);
         }
+    }
+
+    boolean validateFileFormat(List<MultipartFile> fileList){
+        int validExtensions = 0;
+        for(MultipartFile file: fileList){
+            String fileExtension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+            if(VALID_FILE_FORMATS.contains(fileExtension)){
+                validExtensions++;
+            }
+        }
+        return validExtensions == fileList.size();
     }
 
 }
