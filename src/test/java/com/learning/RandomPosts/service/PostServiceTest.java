@@ -35,11 +35,11 @@ class PostServiceTest {
     @Test
     void testGetAllPosts() {
         MultipartFile dummyFile = mock(MultipartFile.class);
-        AbstractPost post001 = PostFactory.createPostByType(new NewPostDto(1, "Post 001", "Post 001 Content", "Test Author", List.of(dummyFile)));
+        AbstractPost post001 = PostFactory.createPostByType(new NewPostDto(1, "Post 001", "Post 001 Content", "Test Author", List.of(dummyFile)), "Dummy Attachment Path");
         post001.setId("ID - Post 001");
-        AbstractPost post002 = PostFactory.createPostByType(new NewPostDto(2, "Post 002", "Post 002 Content", "Test Author", List.of(dummyFile)));
+        AbstractPost post002 = PostFactory.createPostByType(new NewPostDto(2, "Post 002", "Post 002 Content", "Test Author", List.of(dummyFile)), "Dummy Attachment Path");
         post002.setId("ID - Post 002");
-        AbstractPost post003 = PostFactory.createPostByType(new NewPostDto(3, "Post 003", "Post 003 Content", "Test Author", List.of(dummyFile)));
+        AbstractPost post003 = PostFactory.createPostByType(new NewPostDto(3, "Post 003", "Post 003 Content", "Test Author", List.of(dummyFile)), "Dummy Attachment Path");
         post003.setId("ID - Post 003");
 
         when(postRepository.findAll()).thenReturn(List.of(post001, post002, post003));
@@ -53,7 +53,7 @@ class PostServiceTest {
     void testGetPostByTitle(String title) {
         MultipartFile dummyFile = mock(MultipartFile.class);
         NewPostDto postDto = new NewPostDto(1, title, "Post 001 Content", "Test Author", List.of(dummyFile));
-        AbstractPost dummyPost = PostFactory.createPostByType(postDto);
+        AbstractPost dummyPost = PostFactory.createPostByType(postDto, "Dummy Attachment Path");
         when(postRepository.findByTitleIgnoreCase(title)).thenReturn(Optional.of(dummyPost));
 
         Optional<AbstractPost> testPost = postService.getPostByTitle(title);
@@ -93,7 +93,7 @@ class PostServiceTest {
     void testDeletePost() {
         MultipartFile dummyFile = mock(MultipartFile.class);
         NewPostDto postDto = new NewPostDto(1, "Dummy Title 001", "Post 001 Content", "Test Author", List.of(dummyFile));
-        AbstractPost dummyPost = PostFactory.createPostByType(postDto);
+        AbstractPost dummyPost = PostFactory.createPostByType(postDto, "Dummy Attachment Path");
         when(postRepository.findByTitleIgnoreCase(any(String.class))).thenReturn(Optional.of(dummyPost));
         doNothing().when(postRepository).delete(any(AbstractPost.class));
 
@@ -120,7 +120,7 @@ class PostServiceTest {
         MultipartFile dummyFile = mock(MultipartFile.class);
         NewPostDto postDto = new NewPostDto(postType, title, "Dummy Content", "Test Author", List.of(dummyFile));
         PostUpdateDto updatedData = new PostUpdateDto(newTitle, "Updated Dummy Content");
-        AbstractPost dummyPost = PostFactory.createPostByType(postDto);
+        AbstractPost dummyPost = PostFactory.createPostByType(postDto, "Dummy Attachment Path");
         when(postRepository.findByTitleIgnoreCase(any(String.class))).thenReturn(Optional.of(dummyPost));
         when(postRepository.save(any(AbstractPost.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -138,7 +138,7 @@ class PostServiceTest {
         MultipartFile dummyFile = mock(MultipartFile.class);
         NewPostDto postDto = new NewPostDto(postType, title, "Dummy Content", "Test Author", List.of(dummyFile));
         PostUpdateDto updatedData = new PostUpdateDto(newTitle, "Updated Dummy Content");
-        AbstractPost dummyPost = PostFactory.createPostByType(postDto);
+        AbstractPost dummyPost = PostFactory.createPostByType(postDto, "Dummy Attachment Path");
         when(postRepository.findByTitleIgnoreCase(any(String.class))).thenReturn(Optional.empty());
 
         Optional<AbstractPost> testPost = postService.updatePostData(updatedData, title);

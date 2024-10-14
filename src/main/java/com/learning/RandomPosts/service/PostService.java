@@ -7,18 +7,20 @@ import com.learning.RandomPosts.model.PostFactory;
 import com.learning.RandomPosts.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class PostService {
 
     PostRepository postRepository;
+    StorageService storageService;
 
-    public PostService(PostRepository postRepository){
+    public PostService(PostRepository postRepository, StorageService storageService) {
         this.postRepository = postRepository;
+        this.storageService = storageService;
     }
 
     public List<AbstractPost> getAllPosts(){
@@ -30,7 +32,9 @@ public class PostService {
     }
 
     public Optional<AbstractPost> createPost(NewPostDto newPostDto){
-        Optional<AbstractPost> newPost = Optional.of(PostFactory.createPostByType(newPostDto));
+        String folderId = UUID.randomUUID().toString();
+        storageService.store(newPostDto.attachments(), folderId);
+        Optional<AbstractPost> newPost = Optional.of(PostFactory.createPostByType(newPostDto, folderId));
         postRepository.save(newPost.get());
         return newPost;
     }

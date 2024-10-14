@@ -5,6 +5,7 @@ target/
 !**/src/test/**/target/
 .env
 application-dev.yml
+StorageFolder
 
 ### STS ###
 .apt_generated

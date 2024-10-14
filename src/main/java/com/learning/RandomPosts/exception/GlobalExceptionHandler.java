@@ -19,6 +19,7 @@ public class GlobalExceptionHandler {
     private static final int SQL_STATE_UNIQUE_CONSTRAINT_VIOLATION = 23505;
     private static final int ATTACHMENT_ARGUMENT_SIZE_EXCEEDED = 21111;
     private static final int NULL_POINTER_EXCEPTION = 33333;
+    private static final int STORAGE_EXCEPTION = 66666;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorMessage> handleMethodArgumentExceptions(MethodArgumentNotValidException exception) {
@@ -49,8 +50,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity<ErrorMessage> handleException(Exception exception) {
+    public ResponseEntity<ErrorMessage> handleNullPointerException(Exception exception) {
         ErrorMessage errorMessage = new ErrorMessage(LocalDateTime.now(), HttpStatus.INTERNAL_SERVER_ERROR.value(), NULL_POINTER_EXCEPTION, List.of("Internal Server Error. Please report to an administrator"));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
+    }
+
+    @ExceptionHandler(StorageException.class)
+    public ResponseEntity<ErrorMessage> handleStorageException(Exception exception){
+        ErrorMessage errorMessage = new ErrorMessage(LocalDateTime.now(), HttpStatus.INTERNAL_SERVER_ERROR.value(), STORAGE_EXCEPTION, List.of("Internal Server Error. Please report to an administrator"));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
     }
 }
