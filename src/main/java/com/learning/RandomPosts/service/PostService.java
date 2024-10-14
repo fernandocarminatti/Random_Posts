@@ -44,6 +44,7 @@ public class PostService {
         if(postExistence.isEmpty()){
             return false;
         }
+        storageService.deleteAll(postExistence.get().getAttachments());
         postRepository.delete(postExistence.get());
         return true;
     }

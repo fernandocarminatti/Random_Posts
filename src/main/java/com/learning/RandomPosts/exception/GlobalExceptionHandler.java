@@ -50,14 +50,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity<ErrorMessage> handleNullPointerException(Exception exception) {
+    public ResponseEntity<ErrorMessage> handleNullPointerException(NullPointerException exception) {
         ErrorMessage errorMessage = new ErrorMessage(LocalDateTime.now(), HttpStatus.INTERNAL_SERVER_ERROR.value(), NULL_POINTER_EXCEPTION, List.of("Internal Server Error. Please report to an administrator"));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
     }
 
     @ExceptionHandler(StorageException.class)
-    public ResponseEntity<ErrorMessage> handleStorageException(Exception exception){
-        ErrorMessage errorMessage = new ErrorMessage(LocalDateTime.now(), HttpStatus.INTERNAL_SERVER_ERROR.value(), STORAGE_EXCEPTION, List.of("Internal Server Error. Please report to an administrator"));
+    public ResponseEntity<ErrorMessage> handleStorageException(StorageException exception){
+        ErrorMessage errorMessage = new ErrorMessage(LocalDateTime.now(), HttpStatus.INTERNAL_SERVER_ERROR.value(), STORAGE_EXCEPTION, List.of(exception.getMessage()));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
     }
 }

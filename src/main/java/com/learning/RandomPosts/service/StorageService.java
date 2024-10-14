@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class StorageService {
 
@@ -56,6 +57,10 @@ public abstract class StorageService {
 
     void deleteAll(String path) {
         try {
+            List<Path> filesWithinParameter = Files.list(STORAGE_LOCATION.resolve(path)).toList();
+            for (Path file: filesWithinParameter){
+                Files.delete(file);
+            }
             Files.deleteIfExists(STORAGE_LOCATION.resolve(path));
         } catch (IOException exception) {
             throw new StorageException("Could not delete all files.", exception);
