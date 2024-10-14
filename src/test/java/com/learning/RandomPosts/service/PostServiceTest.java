@@ -27,6 +27,8 @@ class PostServiceTest {
 
     @Mock
     PostRepository postRepository;
+    @Mock
+    StorageService storageService;
 
     @InjectMocks
     PostService postService;
@@ -66,9 +68,9 @@ class PostServiceTest {
     @ParameterizedTest
     @CsvSource({"Post 004, 1", "Post 005, 2", "Post 006, 3"})
     void testCreatePost(String title, Integer postType) {
-        MultipartFile dummyFile = mock(MultipartFile.class);
-        NewPostDto postDto = new NewPostDto(postType, title, "Dummy Content", "Test Author", List.of(dummyFile));
-
+        List<MultipartFile> dummyFileList = mock(List.class);
+        NewPostDto postDto = new NewPostDto(postType, title, "Dummy Content", "Test Author", dummyFileList);
+        doNothing().when(storageService).store(any(List.class), any(String.class));
         when(postRepository.save(any(AbstractPost.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Optional<AbstractPost> testPost = postService.createPost(postDto);
@@ -81,8 +83,9 @@ class PostServiceTest {
     @ParameterizedTest
     @CsvSource({"Post 004, 1", "Post 005, 2", "Post 006, 3"})
     void testCreatePostConflict(String title, Integer postType) {
-        MultipartFile dummyFile = mock(MultipartFile.class);
-        NewPostDto postDto = new NewPostDto(postType, title, "Dummy Content", "Test Author", List.of(dummyFile));
+        List<MultipartFile> dummyFileList = mock(List.class);
+        NewPostDto postDto = new NewPostDto(postType, title, "Dummy Content", "Test Author", dummyFileList);
+        doNothing().when(storageService).store(any(List.class), any(String.class));
         when(postRepository.save(any(AbstractPost.class))).thenThrow(DataIntegrityViolationException.class);
 
         assertThrows(DataIntegrityViolationException.class, () -> postService.createPost(postDto));
