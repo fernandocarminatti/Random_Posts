@@ -2,7 +2,6 @@ package com.learning.RandomPosts.model;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
