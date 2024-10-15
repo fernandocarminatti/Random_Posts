@@ -6,11 +6,9 @@ import java.util.List;
 
 public interface StorageService {
 
-
-
     void init();
 
-    public void store(List<MultipartFile> files, String folderUUID);
+    void store(List<MultipartFile> files, String folderUUID);
 
     void deleteFile(String folderUUID, String fileName);
 

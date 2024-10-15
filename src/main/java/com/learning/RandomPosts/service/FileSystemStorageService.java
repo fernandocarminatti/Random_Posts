@@ -11,16 +11,24 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 @Service
 public class FileSystemStorageService implements StorageService{
 
-    protected Path STORAGE_LOCATION;
-    protected List<String> VALID_FILE_FORMATS = List.of(".pdf", ".jpg");
+    private static Path STORAGE_LOCATION;
+    private final List<String> VALID_FILE_FORMATS = List.of(".pdf", ".jpg");
 
     public FileSystemStorageService(){
-        this.STORAGE_LOCATION = Path.of("StorageFolder");
-        this.init();
+        STORAGE_LOCATION = Path.of("StorageFolder");
+    }
+
+    public void setCustomStorageLocation(String customStorageLocation){
+        STORAGE_LOCATION = Path.of(customStorageLocation);
+    }
+
+    public Path getStorageLocation(){
+        return STORAGE_LOCATION;
     }
 
     @Override
@@ -37,24 +45,17 @@ public class FileSystemStorageService implements StorageService{
 
     @Override
     public void store(List<MultipartFile> files, String folderUUID) {
-        if(files.isEmpty()){
-            throw new StorageException("Could not proceed with the request. Please check the attachment quantity.");
-        }
-        if( !validateFileFormat(files) ){
-            throw new StorageException("File format(s) not supported. Accepted values are .pdf and .jpg");
-        }
-        if(Files.notExists(STORAGE_LOCATION.resolve(folderUUID))){
-            try{
-                Files.createDirectory(STORAGE_LOCATION.resolve(folderUUID));
-            } catch(IOException exception){
-                throw new InternalStorageException("Could not create directory for file.", exception);
-            }
-        }
+
+        String fallbackFileName = "FallbackFileName - " + Math.random();
+        validateFileFormat(files);
+        Path postLocation = validateFolder(folderUUID);
+
         for(MultipartFile file : files){
             try {
-                Files.copy(file.getInputStream(), STORAGE_LOCATION.resolve(folderUUID).resolve(Objects.requireNonNull(file.getOriginalFilename())), StandardCopyOption.REPLACE_EXISTING);
+                String fileName = Objects.requireNonNullElse(file.getOriginalFilename(), fallbackFileName);
+                Files.copy(file.getInputStream(), postLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException exception) {
-                throw new InternalStorageException("Could not create directory for file.", exception);
+                throw new InternalStorageException("Could not save files no disk.", exception);
             }
         }
     }
@@ -81,15 +82,34 @@ public class FileSystemStorageService implements StorageService{
         }
     }
 
-    @Override
     public boolean validateFileFormat(List<MultipartFile> fileList) {
+        if(fileList.isEmpty()){
+            throw new StorageException("Could not proceed with the request. Please check the attachment quantity.");
+        }
         int validExtensions = 0;
         for(MultipartFile file: fileList){
-            String fileExtension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
-            if(VALID_FILE_FORMATS.contains(fileExtension)){
-                validExtensions++;
+            String fileExtension = Objects.requireNonNull(file.getOriginalFilename()).substring(file.getOriginalFilename().lastIndexOf("."));
+            if( !VALID_FILE_FORMATS.contains(fileExtension) ){
+                throw new StorageException("Could not proceed with the request. Please check attachments format. Only .pdf and .jpg are allowed.");
             }
+            validExtensions++;
         }
         return validExtensions == fileList.size();
     }
+
+    public Path validateFolder(String folderUUID) {
+        if(Files.exists(STORAGE_LOCATION.resolve(folderUUID))){
+            try {
+                return Files.createDirectory(STORAGE_LOCATION.resolve(folderUUID));
+            } catch(IOException exception){
+                throw new InternalStorageException("Could not create directory", exception);
+            }
+        }
+        try{
+            return Files.createDirectory(STORAGE_LOCATION.resolve(folderUUID));
+        } catch(IOException exception){
+            throw new InternalStorageException("Could not create directory for file.", exception);
+        }
+    }
+
 }
